@@ -1,0 +1,2 @@
+# dmbot_USB2CAN
+适配达妙USB转CAN驱动版的Linux接口
