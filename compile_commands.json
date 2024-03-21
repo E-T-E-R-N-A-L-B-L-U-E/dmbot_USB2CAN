@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/home/mustang/Workspace/dmbot_USB2CAN/build",
+  "command": "/usr/bin/c++  -I/home/mustang/Workspace/dmbot_USB2CAN/includes -std=gnu++17 -o CMakeFiles/serial_lib.dir/src/serial/serial.cc.o -c /home/mustang/Workspace/dmbot_USB2CAN/src/serial/serial.cc",
+  "file": "/home/mustang/Workspace/dmbot_USB2CAN/src/serial/serial.cc"
+},
+{
+  "directory": "/home/mustang/Workspace/dmbot_USB2CAN/build",
+  "command": "/usr/bin/c++  -I/home/mustang/Workspace/dmbot_USB2CAN/includes -std=gnu++17 -o CMakeFiles/serial_lib.dir/src/serial/impl/unix.cc.o -c /home/mustang/Workspace/dmbot_USB2CAN/src/serial/impl/unix.cc",
+  "file": "/home/mustang/Workspace/dmbot_USB2CAN/src/serial/impl/unix.cc"
+},
+{
+  "directory": "/home/mustang/Workspace/dmbot_USB2CAN/build",
+  "command": "/usr/bin/c++  -I/home/mustang/Workspace/dmbot_USB2CAN/includes -std=gnu++17 -o CMakeFiles/serial_lib.dir/src/serial/impl/list_ports/list_ports_linux.cc.o -c /home/mustang/Workspace/dmbot_USB2CAN/src/serial/impl/list_ports/list_ports_linux.cc",
+  "file": "/home/mustang/Workspace/dmbot_USB2CAN/src/serial/impl/list_ports/list_ports_linux.cc"
+},
+{
+  "directory": "/home/mustang/Workspace/dmbot_USB2CAN/build",
+  "command": "/usr/bin/c++  -I/home/mustang/Workspace/dmbot_USB2CAN/includes -std=gnu++17 -o CMakeFiles/serial_test.dir/src/test.cpp.o -c /home/mustang/Workspace/dmbot_USB2CAN/src/test.cpp",
+  "file": "/home/mustang/Workspace/dmbot_USB2CAN/src/test.cpp"
+}
+]
