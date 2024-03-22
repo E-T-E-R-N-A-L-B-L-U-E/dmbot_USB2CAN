@@ -38,68 +38,19 @@ USB2CAN_OpenError CanBus::_openUSB2CAN(const std::string &port, const int64_t &t
         msg_recv_thread_ = std::make_shared<std::thread>(&CanBus::_canMsgRecvCheck, this);
         msg_recv_thread_->detach();
 
-
-        // ===================================================
         // ================= stop CAN sending ================
-        // ===================================================
         _write<USB2CAN_CANSTOP>(CAN_STOP_BAG_);
         std::this_thread::sleep_for(100ms);                // waiting for 100ms(clear the buffer)
 
-        // ===================================================
         // ================ config the can bus ===============
-        // ===================================================
-        // candevice_baudrate_setting_status = 0;
         candevice_baudrate_set_bag_.baudrate = candevice_baudrate_type_;
         _write<CANDEVICE_BaudrateSetBag>(candevice_baudrate_set_bag_);
-
-        // // wait for the reply until timeout
-        // std::cerr << "wait time: " << timeout_us << std::endl;
-        // std::chrono::system_clock::time_point time_send_configuration = std::chrono::system_clock::now();
-        // while (candevice_baudrate_setting_status == 0)
-        //     if (timeout_us != 0 && std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - time_send_configuration).count() > timeout_us)
-        //         break;
-        
-        // // check the setting result
-        // if (candevice_baudrate_setting_status == 0)   // no reply from the target device
-        // {
-        //     std::cerr << 1 << std::endl;
-        //     serial_.close();
-        //     return USB2CAN_OpenError::NO_REPLY;
-        // }
-        // if (candevice_baudrate_setting_status == 1)   // failed to configure the target device
-        // {
-        //     serial_.close();
-        //     return USB2CAN_OpenError::BAUDRATE_SETTING_ERROR;
-        // }
     } else
     {
-        // TODO: launch the UART handle thread
-
-        // ===================================================
         // ========= config the usb2can device ===============
-        // ===================================================
-        // usb2can_baudrate_setting_status = 0;
         usb2can_baudrate_set_bag_.data = usb2can_baudrate_set_msg_;
         _write<USB2CAN_BaudrateSetBag>(usb2can_baudrate_set_bag_);
-        
-        // // wait for the reply until timeout
-        // std::chrono::system_clock::time_point time_send_configuration = std::chrono::system_clock::now();
-        // while (usb2can_baudrate_setting_status == 0)
-        //     if (timeout_us != 0 && std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - time_send_configuration).count() > timeout_us)
-        //         break;
-        
-        // // check the setting result
-        // if (usb2can_baudrate_setting_status == 0)   // no reply from the target device
-        // {
-        //     std::cerr << 1 << std::endl;
-        //     serial_.close();
-        //     return USB2CAN_OpenError::NO_REPLY;
-        // }
-        // if (usb2can_baudrate_setting_status == 1)   // failed to configure the target device
-        // {
-        //     serial_.close();
-        //     return USB2CAN_OpenError::BAUDRATE_SETTING_ERROR;
-        // }
+
     }
 
 
@@ -142,6 +93,7 @@ void CanBus::_reset()
 
     // set can_recv_handle_
     can_recv_handle_ = nullptr;
+    canbag_recv_handle_ = nullptr;
 }
 
 USB2CAN_OpenError CanBus::_reconnect()
@@ -208,16 +160,28 @@ void CanBus::_canMsgRecvCheck()
         serial_.read(&can_recv_bag_.endding, 1);
         if (can_recv_bag_.endding != USB2CAN_RECV_ENDING_BYTE)
             continue;       // detected bit absence during bag receiving
+        
+        // if we reached here, the can msg is correctly received
+        if (canbag_recv_handle_ != nullptr)
+            canbag_recv_handle_(std::ref(can_recv_bag_));
+        
         switch (static_cast<CAN_RecvCmdType>(can_recv_bag_.command))
         {
         case CAN_RecvCmdType::HEART_BEAT:
             // handle heart beat command
+            // FIXME: not work
+            if (debug)
+                std::cerr << "======heart beat received=====" << std::endl;
             break;
         case CAN_RecvCmdType::RECV_FAILURE:
             // handle can msg receive failure
+            if (debug)
+                std::cerr << "receive message failed" << std::endl;
             break;
         case CAN_RecvCmdType::RECV_SUCC:
             // handle can msg receive
+            if (debug)
+                std::cerr << "receive message successfully" << std::endl;
             _receiveSuccHandle(std::ref(can_recv_bag_.msg));
             break;
         case CAN_RecvCmdType::SEND_FAILURE:
@@ -232,11 +196,17 @@ void CanBus::_canMsgRecvCheck()
             break;
         case CAN_RecvCmdType::BAUDRATE_SET_FAILURE:
             // handle baudrate setting failure
+            // FIXME: not work
+            if (debug)
+                std::cerr << "set baudrate failed" << std::endl;
             usb2can_baudrate_setting_status = 1;
             candevice_baudrate_setting_status = 1;
             break;
         case CAN_RecvCmdType::BAUDRATE_SET_SUCC:
             // handle baudrate setting success
+            // FIXME: not work
+            if (debug)
+                std::cerr << "set baudrate successfully" << std::endl;
             usb2can_baudrate_setting_status = 2;
             candevice_baudrate_setting_status = 2;
             break;
@@ -289,9 +259,16 @@ USB2CAN_OpenError CanBus::openDeviceWithHID(const std::string &hid, const int64_
     return USB2CAN_OpenError::HARDWIRE_NOT_FOUND;
 }
 
-void CanBus::setCanRecvCallBack(void (*can_recv_handle)(const uint32_t &, const uint8_t *, const uint8_t &))
+void CanBus::setCanDataFrameRecvCallBack(void (*can_recv_handle)(const uint32_t &, const uint8_t *, const uint8_t &))
 {
+    assert(device_mode_ == USB2CAN_Mode::CAN);
     can_recv_handle_ = can_recv_handle;
+}
+
+void CanBus::setCanBagRecvCallBack(void (*canbag_recv_handle)(const CAN_RecvBag &))
+{
+    assert(device_mode_ == USB2CAN_Mode::CAN);
+    canbag_recv_handle_ = canbag_recv_handle;
 }
 
 USB2CAN_OpenError CanBus::enableUARTMode(const USB2CAN_BaudrateSetMsg &usb2can_setting)
@@ -351,6 +328,7 @@ void CanBus::sendStandardCanMsg(const uint32_t &id, const uint8_t *data, const u
 {
     assert(usb2can_opened_flag_ == true && device_mode_ == USB2CAN_Mode::CAN);
     assert(len <= 8);
+    can_send_bag_buff_.msg.cmd_type = CAN_SendCmdType::CAN_SEND;
     can_send_bag_buff_.msg.can_id = id;
 
     memcpy(can_send_bag_buff_.msg.data, data, len);
@@ -380,6 +358,7 @@ void CanBus::close()
 
     // set can_recv_handle_
     can_recv_handle_ = nullptr;
+    canbag_recv_handle_ = nullptr;
 }
 
 

@@ -14,10 +14,8 @@
 #include "can/message.h"
 
 /// TODO:
-///     1. add more callbacks
 ///     2. add can analysis
 ///     3. add multiple bag sending
-///     4. test heart beats
 
 
 namespace usb2can
@@ -139,6 +137,15 @@ private:
     */
     void (*can_recv_handle_)(const uint32_t &, const uint8_t *, const uint8_t &);
 
+    /**
+     * @attention this function should not block the program
+     * The function ptr for can msg receive callback.
+     * This function will be called when a new can bag is received in msg_recv_thread_
+     * 
+     * @param CAN_RecvBag:  the received can msg
+    */
+    void (*canbag_recv_handle_)(const CAN_RecvBag &);
+
 
     /** ========================================
      *   UART RELATED FUNCTIONS DECLEARED HERE
@@ -169,13 +176,23 @@ public:
 
     /**
      * @attention this recall function should not block the program
+     * @brief Set the function called when new can data frame is received
+     * 
+     * @param uint32_t:     the received can id
+     * @param uint8_t[]:    the received can data
+     * @param uint8_t:      the received data len
+    */
+    void setCanDataFrameRecvCallBack(void (*can_recv_handle)(const uint32_t &, const uint8_t *, const uint8_t &));
+
+    /**
+     * @attention this recall function should not block the program
      * @brief Set the function called when new can message is received
      * 
      * @param uint32_t:     the received can id
      * @param uint8_t[]:    the received can data
      * @param uint8_t:      the received data len
     */
-    void setCanRecvCallBack(void (*can_recv_handle)(const uint32_t &, const uint8_t *, const uint8_t &));
+    void setCanBagRecvCallBack(void (*canbag_recv_handle)(const CAN_RecvBag &));
 
 
     /**
