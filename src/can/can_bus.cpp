@@ -12,7 +12,7 @@ namespace usb2can
 {
 
 
-USB2CAN_OpenError CanBus::_openUSB2CAN(const std::string &port, const int64_t &timeout_us)
+USB2CAN_OpenError CanBus::_openUSB2CAN(const std::string &port)
 {
     using namespace std::chrono;
     
@@ -75,7 +75,6 @@ void CanBus::_reset()
     usb2can_opened_flag_ = false;
 
     // set usb2can device configuration timeout
-    usb2can_config_timeout_ = 0;
     usb2can_port_ = "";
 
     // set the usb2can baudrate
@@ -109,7 +108,7 @@ USB2CAN_OpenError CanBus::_reconnect()
     // set serial status to not opened;
     usb2can_opened_flag_ = false;
 
-    return _openUSB2CAN(usb2can_port_, usb2can_config_timeout_);
+    return _openUSB2CAN(usb2can_port_);
 }
 
 template<typename T>
@@ -238,7 +237,7 @@ std::vector<serial::PortInfo> CanBus::listDevices() const
 }
 
 
-USB2CAN_OpenError CanBus::openDeviceWithHID(const std::string &hid, const int64_t &timeout_us)
+USB2CAN_OpenError CanBus::openDeviceWithHID(const std::string &hid)
 {
     if (usb2can_opened_flag_)
         return USB2CAN_OpenError::DEVICE_ALREADY_OPENED;
@@ -247,11 +246,9 @@ USB2CAN_OpenError CanBus::openDeviceWithHID(const std::string &hid, const int64_
         // if found the target device
         if (port_info.hardware_id.compare(hid) == 0)
         {
-            // update the default configuration timeout value
-            usb2can_config_timeout_ = timeout_us;
             // update the default port
             usb2can_port_ = port_info.port;
-            return _openUSB2CAN(port_info.port, usb2can_config_timeout_);
+            return _openUSB2CAN(port_info.port);
         }
     }
 

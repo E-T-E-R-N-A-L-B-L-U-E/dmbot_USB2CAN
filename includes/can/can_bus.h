@@ -51,7 +51,6 @@ private:
      *  ===============================
     */
     serial::Timeout      USB2CAN_TIMEOUT = serial::Timeout::simpleTimeout(serial::Timeout::max());  // the protocol reading will not timeout
-    int64_t              usb2can_config_timeout_;               // the usb2can configuration timeout set by the user
     std::string          usb2can_port_;                         // the usb2can port set by the user
     size_t               i_;                                    // iterator for for loop
 
@@ -109,7 +108,7 @@ private:
      *   DEVICE RELATED FUNCTIONS DECLEARED HERE
      *  =========================================
     */
-    USB2CAN_OpenError _openUSB2CAN(const std::string &port, const int64_t &timeout_us);              // open the usb2can device with port
+    USB2CAN_OpenError _openUSB2CAN(const std::string &port);              // open the usb2can device with port
     
     void _reset();                                          // reset all values to default
     USB2CAN_OpenError _reconnect();                         // close the device and reconnect
@@ -167,11 +166,10 @@ public:
      * @brief open the USB2CAN device with target hardwire id
      * 
      * @param hid: the hardwire id of the device with need to be opened
-     * @param timeout: the time(us) waiting for the reply from the usb2can device
      * 
      * @return: the device is successfully opened or not
     */
-    USB2CAN_OpenError openDeviceWithHID(const std::string &hid, const int64_t &timeout_us = 0);
+    USB2CAN_OpenError openDeviceWithHID(const std::string &hid);
 
 
     /**

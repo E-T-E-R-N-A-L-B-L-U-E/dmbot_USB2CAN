@@ -24,19 +24,27 @@ void canBagReceiveHandle(const usb2can::CAN_RecvBag &msg)
 
 int main(int argc, char ** argv)
 {
+    // use the hardwire id to select the device you want to open.
     std::string target_hid = "USB VID:PID=2e88:4603 SNR=00000000050C";
+
+    // the data transmit with can bus
     uint8_t data[8] = {0xA2, 0x00, 0x00, 0x00, 0xA0, 0x8C, 0x00, 0x00};
+    
+    // config the can bus
     usb2can::CanBus can_bus;
     can_bus.enableCANMode(usb2can::CANDEVICE_BaudrateTypes::RATE_1M);
-    can_bus.setCanBagRecvCallBack(&canBagReceiveHandle);
+    can_bus.setCanBagRecvCallBack(&canBagReceiveHandle);                // register callback functions
+    can_bus.setCanDataFrameRecvCallBack(&canReceiveHandle);             // register callback functions
 
+    // list the hardwire id of the serial ports on the device
     std::vector<serial::PortInfo> port_list = can_bus.listDevices();
     for (int i = 0; i < port_list.size(); i++)
     {
         std::cout << "port: " << port_list[i].port << ", hid: " << port_list[i].hardware_id << "." << std::endl;
     }
 
-    usb2can::USB2CAN_OpenError result = can_bus.openDeviceWithHID(target_hid, 1000000);
+    // try to open the USB2CAN device
+    usb2can::USB2CAN_OpenError result = can_bus.openDeviceWithHID(target_hid);
     if (result != usb2can::USB2CAN_OpenError::SUCC)
     {
         std::cerr << "failed to open device, error code: " << static_cast<int>(result) << std::endl;
@@ -45,9 +53,8 @@ int main(int argc, char ** argv)
         std::cerr << "successfully opened device" << std::endl;
 
     
-
+    // send can message
     using namespace std::chrono;
-    
     for (int i = 0; i < 10; i++)
     {
         can_bus.sendStandardCanMsg(0x141, data, 8);
