@@ -23,5 +23,5 @@ target_link_directories(usb2can_lib PUBLIC includes/can)
 target_link_libraries(usb2can_lib serial_lib)
 
 
-add_executable(serial_test src/test.cpp)
-target_link_libraries(serial_test usb2can_lib serial_lib)
+add_executable(can_bus_demo app/can_bus_demo.cpp)
+target_link_libraries(can_bus_demo usb2can_lib serial_lib)

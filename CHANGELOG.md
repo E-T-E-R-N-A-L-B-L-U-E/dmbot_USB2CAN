@@ -12,7 +12,6 @@
         1. opendevice
         2. setCanRecvCallBack
         3. enableCANMode
-        4. 
     - problem:
         1. the can baudrate setting reply is missing
         2. heatbeats related do not work
