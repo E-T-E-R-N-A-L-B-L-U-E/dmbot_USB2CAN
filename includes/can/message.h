@@ -15,16 +15,6 @@ const uint8_t USB2CAN_RECV_ENDING_BYTE = 0x55;
 const uint8_t USB2CAN_EMPTY_BYTE = 0x00;
 
 
-
-struct USB2CAN_SHAKEHANDS
-{
-    uint8_t  header_low     = 0x55;
-    uint8_t  header_high    = 0x02;
-    uint8_t  ending_low     = 0xAA;
-    uint8_t  ending_high    = 0x55;
-} __attribute__((packed));
-
-
 struct USB2CAN_HEARTBEATS
 {
     uint8_t  header_low     = 0x55;

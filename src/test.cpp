@@ -7,6 +7,7 @@ int main(int argc, char ** argv)
     std::string target_hid = "USB VID:PID=2e88:4603 SNR=00000000050C";
     uint8_t data[8] = {0xA2, 0x00, 0x00, 0x00, 0xA0, 0x8C, 0x00, 0x00};
     usb2can::CanBus can_bus;
+    can_bus.enableCANMode(usb2can::CANDEVICE_BaudrateTypes::RATE_1M);
 
     std::vector<serial::PortInfo> port_list = can_bus.listDevices();
     for (int i = 0; i < port_list.size(); i++)
@@ -26,10 +27,10 @@ int main(int argc, char ** argv)
 
     using namespace std::chrono;
     
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 1000; i++)
     {
         can_bus.sendStandardCanMsg(0x141, data, 8);
-        std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for(1ms);
     }
     return 0;
 }
