@@ -256,13 +256,13 @@ USB2CAN_OpenError CanBus::openDeviceWithHID(const std::string &hid)
     return USB2CAN_OpenError::HARDWIRE_NOT_FOUND;
 }
 
-void CanBus::setCanDataFrameRecvCallBack(void (*can_recv_handle)(const uint32_t &, const uint8_t *, const uint8_t &))
+void CanBus::setCanDataFrameRecvCallBack(std::function<void(const uint32_t &, const uint8_t *, const uint8_t &)> can_recv_handle)
 {
     assert(device_mode_ == USB2CAN_Mode::CAN);
     can_recv_handle_ = can_recv_handle;
 }
 
-void CanBus::setCanBagRecvCallBack(void (*canbag_recv_handle)(const CAN_RecvBag &))
+void CanBus::setCanBagRecvCallBack(std::function<void(const CAN_RecvBag &)> canbag_recv_handle)
 {
     assert(device_mode_ == USB2CAN_Mode::CAN);
     canbag_recv_handle_ = canbag_recv_handle;

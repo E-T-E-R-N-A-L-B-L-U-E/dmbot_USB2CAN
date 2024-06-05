@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 
 #include "can/can_bus.h"
 
@@ -33,8 +34,8 @@ int main(int argc, char ** argv)
     // config the can bus
     usb2can::CanBus can_bus;
     can_bus.enableCANMode(usb2can::CANDEVICE_BaudrateTypes::RATE_1M);
-    can_bus.setCanBagRecvCallBack(&canBagReceiveHandle);                // register callback functions
-    can_bus.setCanDataFrameRecvCallBack(&canReceiveHandle);             // register callback functions
+    can_bus.setCanBagRecvCallBack(std::bind(&canBagReceiveHandle, std::placeholders::_1));                // register callback functions
+    can_bus.setCanDataFrameRecvCallBack(std::bind(&canReceiveHandle, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));             // register callback functions
 
     // list the hardwire id of the serial ports on the device
     std::vector<serial::PortInfo> port_list = can_bus.listDevices();

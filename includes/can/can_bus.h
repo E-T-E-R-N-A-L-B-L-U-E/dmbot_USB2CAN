@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <array>
+#include <functional>
 
 #include "serial/serial.h"
 #include "can/message.h"
@@ -134,7 +135,7 @@ private:
      * @param uint8_t[]:    the received can data
      * @param uint8_t:      the received data len
     */
-    void (*can_recv_handle_)(const uint32_t &, const uint8_t *, const uint8_t &);
+    std::function<void(const uint32_t &, const uint8_t *, const uint8_t &)> can_recv_handle_;
 
     /**
      * @attention this function should not block the program
@@ -143,7 +144,7 @@ private:
      * 
      * @param CAN_RecvBag:  the received can msg
     */
-    void (*canbag_recv_handle_)(const CAN_RecvBag &);
+    std::function<void(const CAN_RecvBag &)> canbag_recv_handle_;
 
 
     /** ========================================
@@ -180,7 +181,7 @@ public:
      * @param uint8_t[]:    the received can data
      * @param uint8_t:      the received data len
     */
-    void setCanDataFrameRecvCallBack(void (*can_recv_handle)(const uint32_t &, const uint8_t *, const uint8_t &));
+    void setCanDataFrameRecvCallBack(std::function<void(const uint32_t &, const uint8_t *, const uint8_t &)> can_recv_handle);
 
     /**
      * @attention this recall function should not block the program
@@ -190,7 +191,7 @@ public:
      * @param uint8_t[]:    the received can data
      * @param uint8_t:      the received data len
     */
-    void setCanBagRecvCallBack(void (*canbag_recv_handle)(const CAN_RecvBag &));
+    void setCanBagRecvCallBack(std::function<void(const CAN_RecvBag &)> canbag_recv_handle);
 
 
     /**
