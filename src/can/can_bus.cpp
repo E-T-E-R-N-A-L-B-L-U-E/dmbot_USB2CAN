@@ -231,7 +231,7 @@ CanBus::~CanBus()
     close();
 }
 
-std::vector<serial::PortInfo> CanBus::listDevices() const
+std::vector<serial::PortInfo> CanBus::listDevices()
 {
     return serial::list_ports();
 }

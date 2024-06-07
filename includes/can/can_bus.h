@@ -43,7 +43,7 @@ enum class USB2CAN_OpenError : uint8_t
 class CanBus
 {
 private:
-    const bool           debug = true;
+    const bool           debug = false;
     USB2CAN_Mode         device_mode_;                           // device mode is CAN mode on default
 
 
@@ -160,7 +160,7 @@ public:
      * 
      * @return: the serial ports info of the found devices
     */
-    std::vector<serial::PortInfo> listDevices() const;
+    static std::vector<serial::PortInfo> listDevices();
 
     /**
      * @attention It will be more efficient to config the device before open it
