@@ -112,6 +112,9 @@ private:
     USB2CAN_OpenError _openUSB2CAN(const std::string &port);              // open the usb2can device with port
     
     void _reset();                                          // reset all values to default
+    /**
+     * @attention _reconnect function will not work until a new can message is received
+    */
     USB2CAN_OpenError _reconnect();                         // close the device and reconnect
 
     template<typename T>
@@ -163,7 +166,7 @@ public:
     static std::vector<serial::PortInfo> listDevices();
 
     /**
-     * @attention It will be more efficient to config the device before open it
+     * @attention Always config the device before open it
      * @brief open the USB2CAN device with target hardwire id
      * 
      * @param hid: the hardwire id of the device with need to be opened
@@ -274,6 +277,7 @@ public:
 
 
     /**
+     * @attention close function will not work until a new can message is received
      * @brief close the USB2CAN device
     */
     void close();

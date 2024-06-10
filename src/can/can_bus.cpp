@@ -216,6 +216,8 @@ void CanBus::_canMsgRecvCheck()
             continue;
         }
     }
+
+    msg_recv_thread_required_stop_ = 0;
 }
 
 
